@@ -1,0 +1,1 @@
+import main   # runs the game thru main
