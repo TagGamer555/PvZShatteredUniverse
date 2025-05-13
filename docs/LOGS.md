@@ -133,8 +133,8 @@ Just ported everything I wanted to GitHub and finished porting logs.
 
 Hopefully someone notices this project... Eventually.
 
-Also I have awards night tmrw (13/05/2025) and apparently I got something. Well sh*t.
+Also I have awards night the day after tmrw (14/05/2025) and apparently I got something. Well sh*t.
 
-Really don't wanna go anywhere tomorrow or go to grad... :(((
+Really don't wanna go anywhere tmrw tomorrow or go to grad... :(((
 
 Someone please end me
