@@ -137,4 +137,12 @@ Also I have awards night the day after tmrw (14/05/2025) and apparently I got so
 
 Really don't wanna go anywhere tmrw tomorrow or go to grad... :(((
 
-Someone please end me
+
+
+## 16/05/2025
+
+Polished GitHub repo, added all the essentials, and made it look nice n' stuff.
+
+Good news: I just realized that pygame surfaces/displays support additive blending, so I'll look into that when implementing the zlayers
+
+Hopefully I'll refacture it by the end of this day, see you in a bit I guess...
