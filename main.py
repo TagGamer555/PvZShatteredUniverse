@@ -11,22 +11,18 @@ import datetime
 
 
 # --------- pre-load setup ---------
+# pygame setup
 pg.font.init()
 
 
 
 # --------- settings ---------
+# game settings
+# (resolution, FPS, etc.)
+#TODO: window resizing
 WIDTH = 800
 HEIGHT = 600
-SURFACES = {"SCREEN":pg.display.set_mode((WIDTH, HEIGHT), pg.SRCALPHA),
-            "BG":pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA),
-            "MG":pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA),
-            "MG+":pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA),
-            "MG++":pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA),
-            "FG":pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA),
-            "UI":pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA),
-            "UI+":pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA),
-            "UI++":pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA)}
+SCREEN = pg.display.set_mode((WIDTH, HEIGHT), pg.SRCALPHA)
 CLOCK = pg.time.Clock()
 FPS = 60
 STARTING_SUN = 1500 # og: 150 for reference
@@ -38,9 +34,22 @@ STARTING_SUN = 1500 # og: 150 for reference
 # 10/05/2025 - that future has come...
 import asset_manager
 
+# Import Drawable if it exists in entities or ui, or define a base Drawable class if needed
+try:
+    from entities import Drawable
+except ImportError:
+    try:
+        from ui import Drawable
+    except ImportError:
+        class Drawable:
+            def draw(self, surface):
+                pass
+
 
 
 # --------- helper functions ---------
+# draw a checkerboard lawn
+# this is a helper function for drawing the lawn (no shit)
 def draw_lawn(color1, color2, startX, startY, rows, cols, tile_size, surface):
     for i in range(cols):
         for j in range(rows):
@@ -87,7 +96,7 @@ state.seed_cooldowns = [i.starting_cooldown for i in state.seed_packets]
 # sike ( temporary )
 state.seed_cooldowns = [0 for _ in state.seed_packets]
 
-state.zombie_types = [e.BasicZombie, e.ConeheadZombie, e.BucketheadZombie]
+state.zombie_types = [e.BasicZombie, e.ConeheadZombie, e.BucketheadZombie, e.BrickheadZombie]
 state.selection = None
 
 # for memories
@@ -131,18 +140,24 @@ systems.SYSTEM_GenerateLawn(lawn_x, lawn_y, 70, 70, 5, 9, tilemap)
 
 
 # --------- main game ---------
+# main game loop
+
 RUNNING = True
 while RUNNING:
     for event in pg.event.get():
+        # quit event (close window)
         if event.type == pg.QUIT: RUNNING = False
         
+        # key events (keyboard input)
         if event.type == pg.KEYDOWN and event.key == pg.K_d:
             state.shovel_active = not state.shovel_active
             if state.selection: state.selection = None
         
+        # F12 key event (screenshot)
         elif event.type == pg.KEYDOWN and event.key == pg.K_F12:
-            pg.image.save(SURFACES["SCREEN"], f"SCREENSHOTS\\screenshot-{str(datetime.date.today())+'-'+str(datetime.datetime.now().replace(microsecond=0).time()).replace(':','-')}.png")
-        
+            pg.image.save(SCREEN, f"SCREENSHOTS\\screenshot-{str(datetime.date.today())+'-'+str(datetime.datetime.now().replace(microsecond=0).time()).replace(':','-')}.png")
+
+        # 1-6, q-y key events (seed packets)
         for i in range(len(state.seed_packets)):
             # I am keeping this monster for showoff, don't you dare scold me for trying to make it my pet
             # edit: IT EVOLVED INTO A MULTI-LINER!!! EVERYONE, RUN! SCATTER! RUUUUN!!!!
@@ -157,6 +172,7 @@ elif event.type == pg.KEYDOWN and event.key == pg.K_{j+1} and state.selection ==
             # 11:29 (UTC+1) 05/05/2025: still doing it!
             # 12:34 (UTC+1) 05/05/2025: DONE!!!!!!! :D
             if event.type == pg.KEYDOWN:
+                # list of keys to use
                 keys = ["1", "2", "3", "4", "5", "6", "q", "w", "e", "r", "t", "y"]
                 if eval(f"event.key == pg.K_{keys[i]}"): # no more j :(
                     
@@ -174,6 +190,7 @@ elif event.type == pg.KEYDOWN and event.key == pg.K_{j+1} and state.selection ==
         
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 3: # mouse1 is 1, but mouse2 is 3???? WHYYYY
+                # right mouse button
                 # deselect everything using RMB!
                 state.selection = None
                 state.shovel_active = False
@@ -181,30 +198,42 @@ elif event.type == pg.KEYDOWN and event.key == pg.K_{j+1} and state.selection ==
     for index in range(len(state.seed_cooldowns)):
         if state.seed_cooldowns[index] > 0:
             state.seed_cooldowns[index] -= 1
-    
-    for surface in SURFACES:
-        SURFACES[surface].fill((0, 0, 0, 0)) # OH MY GOD YOU ARE MY SAVIOR!!! I AM CRYING FOR I HAVE FOUND YOU!!!!! THANK GOD!!!!! ;D
-    SURFACES["SCREEN"].fill((35, 45, 55))
-    
+
+    # cls
+    SCREEN.fill((35, 45, 55))
+
     for system in systems.SYSTEM_Root.instances.copy():
         system.update()
     
     for entity in e.Entity.instances.copy():
-        entity.update(SURFACES)
+        entity.update(SCREEN)
     
-    for thing in ui.UI.instances.copy():
-        thing.update(SURFACES)
-    
-    # blit layer by layer (I hope the coordinates are right)
-    SURFACES["SCREEN"].blit(SURFACES["BG"], (0, 0))
-    SURFACES["SCREEN"].blit(SURFACES["MG"], (0, 0))
-    SURFACES["SCREEN"].blit(SURFACES["MG+"], (0, 0))
-    SURFACES["SCREEN"].blit(SURFACES["MG++"], (0, 0))
-    SURFACES["SCREEN"].blit(SURFACES["FG"], (0, 0))
-    SURFACES["SCREEN"].blit(SURFACES["UI"], (0, 0))
-    SURFACES["SCREEN"].blit(SURFACES["UI+"], (0, 0))
-    SURFACES["SCREEN"].blit(SURFACES["UI++"], (0, 0))
-    
+    for element in ui.UI.instances.copy():
+        element.update(SCREEN)
+
+    # Gather all drawables
+    drawables = []
+    drawables.extend(e.Entity.instances.copy())
+    drawables.extend(ui.UI.instances.copy())
+    # If you have systems or other drawables, add them here
+
+    # Sort by z value
+    drawables.sort(key=lambda obj: obj.z if hasattr(obj, 'z') else 0)
+
+    # Draw all to the main screen
+    for obj in drawables:
+        if isinstance(obj, Drawable):
+            # If the draw method returns a surface and position, use BLEND_ADD
+            result = obj.draw(SCREEN)
+            if isinstance(result, tuple) and len(result) == 2:
+                surf, pos = result
+                # Use a configurable blending mode
+                blending_mode = pg.BLEND_ADD  # Default blending mode
+                SCREEN.blit(surf, pos, special_flags=blending_mode)
+            elif result is not None:
+                print(f"Warning: Unexpected return value from draw method of {obj}: {result}")
+
+    # Update the screen
     pg.display.flip()
     
     CLOCK.tick(FPS) # I will probably not need delta time. Probably. I'll see

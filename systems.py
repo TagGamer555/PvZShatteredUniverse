@@ -14,6 +14,8 @@ level_metadata = {} # receives metadata automatically from main.py on level boot
 # lawn_x
 # lawn_y
 
+# this is the root class for all systems
+# it is used to create a singleton system that can be updated
 class SYSTEM_Root:
     instances = set()
     
@@ -23,6 +25,8 @@ class SYSTEM_Root:
     def update(self):
         pass
 
+# this class is used to spawn sun drops
+# it spawns them at a random position on the screen
 class SYSTEM_NaturalSun(SYSTEM_Root):
     def __init__(self, interval, amount, random_range):
         super().__init__()
@@ -39,6 +43,8 @@ class SYSTEM_NaturalSun(SYSTEM_Root):
             entities.Sundrop(uniform(level_metadata["res_width"]/2+40, level_metadata["res_width"]/2-40), -10, 600, self.amount, 0, 3, 0, 180 + 70 * randint(0,4))
             self.delay = int(self.interval * uniform(*self.random_range))
 
+# this class is used to spawn zombies in waves
+# it spawns them in waves, with a delay between each zombie
 class SYSTEM_ZombieWaves(SYSTEM_Root):
     def __init__(self, base_interval, spawn_delay, difficulty_multiplier, wave_limit=-1):
         super().__init__()
@@ -99,6 +105,9 @@ class SYSTEM_ZombieWaves(SYSTEM_Root):
             attempts += 1
         return wave
 
+# this class is used to generate the lawn
+# it takes a tilemap and generates the lawn based on the tilemap
+# the tilemap is a 2D array of strings, where each string represents a type of tile
 class SYSTEM_GenerateLawn(SYSTEM_Root):
     def __init__(self, lawn_x, lawn_y, tile_width, tile_height, lawn_rows, lawn_cols, tilemap):
         self.lawn_x = lawn_x

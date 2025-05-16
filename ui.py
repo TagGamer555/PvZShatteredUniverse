@@ -5,15 +5,21 @@ import entities
 pg.font.init()
 Arial_24_bold = pg.font.SysFont("Arial", 24, bold=True)
 
+# define Drawable
+class Drawable:
+    def draw(self, surface):
+        pass
+
 # TODO: TOMORROW PLEASE!!! I BEG YOU CONTINUE THIS PROJECT!!! PLEASE!!!
 # tmrw: I'm here you idiot
 
-# changed 'surfaces' to 'surface' for consistency
+# changed 'surface' to 'surface' for consistency
+# lmao oops
 
 # --------- core ---------
 
 # base class for all UI-related stuff
-class UI:
+class UI(Drawable):
     instances = set()
     
     # startup variable assignment and preparation
@@ -21,17 +27,18 @@ class UI:
         UI.instances.add(self)
         self.x = x
         self.y = y
+        self.z = state.UIGROUND
         self.hitbox_w = hitbox_w
         self.hitbox_h = hitbox_h
         self.activated = False
     
     # main classmethod for updating everything
-    def update(self, surfaces):
+    def update(self, surface):
         self.behavior()
-        self.draw(surfaces)
+        self.draw(surface)
     
     # your display logic goes here
-    def draw(self, surfaces):
+    def draw(self, surface):
         pass
     
     # your active logic (e.g. on mouse clicks) goes here
@@ -107,16 +114,16 @@ class ShovelButton(Button):
         state.shovel_active = not state.shovel_active
         if state.selection: state.selection = None
     
-    def draw(self, surfaces):
+    def draw(self, surface):
         shovel_color = (140, 100, 60) if not state.shovel_active else (255, 220, 100)
         
-        pg.draw.rect(surfaces["UI"], shovel_color, self.icon_rect)
+        pg.draw.rect(surface, shovel_color, self.icon_rect)
         
         shovel_label = Arial_24_bold.render("Shovel", True, (240, 240, 240))
         
-        surfaces["UI"].blit(shovel_label, (self.icon_rect.x + 5, self.icon_rect.y + 25))
+        surface.blit(shovel_label, (self.icon_rect.x + 5, self.icon_rect.y + 25))
         
-        if state.shovel_active: pg.draw.rect(surfaces["UI"], (255, 255, 0), self.icon_rect, 3)
+        if state.shovel_active: pg.draw.rect(surface, (255, 255, 0), self.icon_rect, 3)
 
 # Seed Packet
 class SeedPacketSurvival(Button):
@@ -143,18 +150,18 @@ class SeedPacketSurvival(Button):
             else:
                 state.selection = None
     
-    def draw(self, surfaces):
+    def draw(self, surface):
         # "ah crap here we go again" (still doing code modularization!!)
         # edit: done soon-ish *exhales*
         
         # Background box
-        pg.draw.rect(surfaces["UI"], (60, 60, 60), (self.x, self.y, self.hitbox_w, self.hitbox_h), border_radius=0)
+        pg.draw.rect(surface, (60, 60, 60), (self.x, self.y, self.hitbox_w, self.hitbox_h), border_radius=0)
 
         # Cooldown overlay
         if self.get_cooldown() > 0:
             cd_ratio = self.get_cooldown() / self.plant.cooldown
             cd_height = int(self.hitbox_h * cd_ratio)
-            pg.draw.rect(surfaces["UI+"], (0, 0, 0, 180), (self.x, self.y, self.hitbox_w, cd_height), border_radius=0)
+            pg.draw.rect(surface, (0, 0, 0, 180), (self.x, self.y, self.hitbox_w, cd_height), border_radius=0)
 
         # Affordability indicator
         if state.sun < self.plant.sun_cost:
@@ -164,20 +171,20 @@ class SeedPacketSurvival(Button):
 
         # Draw label or image (placeholder with cost)
         cost_length = len(str(self.plant.sun_cost))
-        surfaces["UI++"].blit(label, (self.x + self.hitbox_w - self.hitbox_w/(5/cost_length), self.y + self.hitbox_h - self.hitbox_h/1.5))
+        surface.blit(label, (self.x + self.hitbox_w - self.hitbox_w/(5/cost_length), self.y + self.hitbox_h - self.hitbox_h/1.5))
 
         # state.selection border (OOPS this was accidentally replaced somehow LOL)
         if state.selection == self.plant:
-            pg.draw.rect(surfaces["UI+"], (255, 255, 0), (self.x, self.y, self.hitbox_w, self.hitbox_h), 3, border_radius=0)
+            pg.draw.rect(surface, (255, 255, 0), (self.x, self.y, self.hitbox_w, self.hitbox_h), 3, border_radius=0)
 
 # Sun Counter
 class SunCounter(UI):
     def __init__(self, x, y):
         super().__init__(x, y, 0, 0)
     
-    def draw(self, surfaces):
+    def draw(self, surface):
         sun_text = Arial_24_bold.render(str(state.sun), True, (255, 255, 255))
-        surfaces["UI"].blit(sun_text, (self.x, self.y))
+        surface.blit(sun_text, (self.x, self.y))
 
 
 
@@ -245,10 +252,10 @@ class LawnTile(Button):
         state.shovel_active = False # deactivate
         state.selection = None # deselect
     
-    def draw(self, surfaces):
+    def draw(self, surface):
         if self.terrain_type == "land":
             color = (26, 122, 62) if not self.alt else (89, 193, 53)
-            pg.draw.rect(surfaces["SCREEN"], color, self.rect)
+            pg.draw.rect(surface, color, self.rect)
         elif self.terrain_type == "water":
             color = (40, 92, 196) if not self.alt else (36, 159, 222)
-            pg.draw.rect(surfaces["SCREEN"], color, self.rect)
+            pg.draw.rect(surface, color, self.rect)
