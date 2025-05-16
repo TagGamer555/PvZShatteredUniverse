@@ -6,10 +6,13 @@ It is written entirely in Python and uses Pygame to run.
 
 I am new to GitHub, please be nice!
 
+To run this game, you'll need to install the following libraries:
+- Pygame 2.x
+
+Run via `RUN_GAME.pyw` if you're on windows, otherwise run `main.py` through terminal.
 
 
-# Libs
 
-You'll need:
+# Other resources
 
-- Pygame
+[Click here](https://github.com/TagGamer555/PvZShatteredUniverse/discussions/) to visit the Discussions page.
