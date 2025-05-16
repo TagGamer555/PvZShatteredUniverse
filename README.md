@@ -1,3 +1,5 @@
+![License](https://img.shields.io/github/license/TagGamer555/PvZShatteredUniverse)      ![GitHub last commit](https://img.shields.io/github/last-commit/TagGamer555/PvZShatteredUniverse)        ![Issues](https://img.shields.io/github/issues/TagGamer555/PvZShatteredUniverse)        ![Pull Requests](https://img.shields.io/github/issues-pr/TagGamer555/PvZShatteredUniverse)
+
 # About
 
 This is just *one* of my passion projects. This is Plants vs Zombies: Shattered Universe (PvZSU), a *work in progress fangame*, inspired by works of other fans like myself. It is written *entirely in Python* and runs on a *custom engine*.
