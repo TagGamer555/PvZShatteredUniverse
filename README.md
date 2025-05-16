@@ -13,6 +13,16 @@ PvZSU is a *strategic, lane-based tower defense game* about *defending yourself*
 
 
 
+# Credits
+
+## Programming
+- [Alexander888 (TagGamer555)](https://github.com/TagGamer555)
+
+## Characters and Character Design
+- [PopCap Studios](https://www.ea.com/ea-studios/popcap)
+
+
+
 # Features
 
 PvZSU is *still early in development*, but it *already features*:
