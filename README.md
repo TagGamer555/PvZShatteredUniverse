@@ -4,33 +4,14 @@ This is just *one* of my passion projects. This is Plants vs Zombies: Shattered 
 
 PvZSU is a *strategic, lane-based tower defense game* about *defending yourself* from incoming *hordes of opportunistic zombies*. As you progress further, you will encounter both *new plants* and *new zombies* to *help and hinder* you, respectively.
 
-> [!Important]
-> **I am not affiliated with PopCap or Electronic Arts.**
->
-> PvZSU is a **non-profit, open-source** project inspired by **Plants vs Zombies by PopCap Studios**
-> 
-> All credit for original Plants vs Zombies characters goes to **PopCap Studios and their games**, such as **Plants vs Zombies**, **Plants vs Zombies 2**, and **Plants vs Zombies 3**.
-
-
-
-# Credits
-
-## Programming
-- [Alexander888 (TagGamer555)](https://github.com/TagGamer555)
-
-## Characters and Character Design
-- [PopCap Studios](https://www.ea.com/ea-studios/popcap)
-
-
-
-# Features
-
-PvZSU is *still early in development*, but it *already features*:
-- 7 different plants - each with different behavior
-- 3 different zombies - Basic, Conehead, and Buckethead
-- 2 types of landscape - both fertile land and pools of water
-- Procedural zombie wave generation - each run is different
-- Core game mechanics - collect sun, place plants, shovel them, and create your own economy
+<details>
+  <summary><h3>Important</h3></summary>
+    <ul>
+    <li>I am <b>not affiliated</b> with <b>PopCap Studios</b> or <b>Electronic Arts</b>.</li>
+    <li>PvZSU is a non-profit, open-source project inspired by Plants vs Zombies by PopCap Studios.</li>
+    <li>All credit for original Plants vs Zombies characters goes to PopCap Studios and their games, such as Plants vs Zombies, Plants vs Zombies 2, and Plants vs Zombies 3.</li>
+    </ul>
+</details>
 
 
 
@@ -44,6 +25,17 @@ PvZSU is *still early in development*, but it *already features*:
 > How to launch:
 > - **Windows**: Run `RUN_GAME.pyw`
 > - **macOS/Linux**: Run `main.py` via terminal
+
+
+
+# Features
+
+PvZSU is *still early in development*, but it *already features*:
+- 7 different plants - each with different behavior
+- 3 different zombies - Basic, Conehead, and Buckethead
+- 2 types of landscape - both fertile land and pools of water
+- Procedural zombie wave generation - each run is different
+- Core game mechanics - collect sun, place plants, shovel them, and create your own economy
 
 
 
@@ -97,3 +89,11 @@ In this section, I will present *current plans* for the *game's future*, includi
     <li>Particle Effects</li>
   </ul>
 </details>
+
+
+
+# Credits
+
+### [Alexander888 (TagGamer555)](https://github.com/TagGamer555) - Programming
+
+### [PopCap Studios](https://www.ea.com/ea-studios/popcap) - Character and character design
