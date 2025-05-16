@@ -98,4 +98,4 @@ In this section, I will present *current plans* for the *game's future*, includi
 
 ### [Alexander888 (TagGamer555)](https://github.com/TagGamer555) - Programming
 
-### [PopCap Studios](https://www.ea.com/ea-studios/popcap) - Character and character design
+### [PopCap Studios](https://www.ea.com/ea-studios/popcap) - Characters and character design
