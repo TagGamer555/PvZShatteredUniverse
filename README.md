@@ -4,6 +4,8 @@ This is just *one* of my passion projects. This is Plants vs Zombies: Shattered 
 
 It is written entirely in Python and uses Pygame to run.
 
+I am new to GitHub, please be nice!
+
 
 
 # Libs
