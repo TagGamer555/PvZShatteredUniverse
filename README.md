@@ -45,7 +45,14 @@ PvZSU is *still early in development*, but it *already features*:
 
 In the Discussions, you can talk about anything you want, as long as it does not break the [Code of Conduct](https://github.com/TagGamer555/PvZShatteredUniverse/blob/main/CODE_OF_CONDUCT.md).
 
-Please enjoy your stay, repo traveller!
+> [!Important]
+> Discussions vs Issues
+> - Use issues to report *bugs, glitches, and other unintended behavior*
+> - Use discussions to *ask questions, share your ideas, and leave feedback*
+> 
+> Please don't mix them up!
+
+Enjoy your stay, repo traveller!
 
 
 
