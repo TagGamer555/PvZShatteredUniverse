@@ -34,7 +34,7 @@ PvZSU is a *strategic, lane-based tower defense game* about *defending yourself*
 
 PvZSU is *still early in development*, but it *already features*:
 - 7 different plants - each with different behavior
-- 3 different zombies - Basic, Conehead, and Buckethead
+- 4 different zombies - Basic, Conehead, Buckethead, and Brickhead
 - 2 types of landscape - both fertile land and pools of water
 - Procedural zombie wave generation - each run is different
 - Core game mechanics - collect sun, place plants, shovel them, and create your own economy
