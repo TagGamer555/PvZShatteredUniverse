@@ -20,8 +20,25 @@ Vector2 allows you to calculate:
 from math import hypot, acos, degrees, floor, ceil, sin, cos, radians, sqrt
 import warnings
 
-class ExtraItemsWarning(Warning): pass
-class ThisIsNotFunnyWarning(Warning): pass
+class ExtraItemsWarning(Warning):
+    """This warning should be raised when a desired list or tuple has extra objects that it needs to"""
+    pass
+
+class ThisIsNotFunnyWarning(Warning):
+    """A joke warning"""
+    pass
+
+class AttributeDeletionBannedWarning(Warning):
+    """This warning should be raised when the user attempts to remove an attribute from an object"""
+    pass
+
+class ModificationNotAllowedError(Exception):
+    """This exception should be raised when the user attempts to create additional attributes within an object"""
+    pass
+
+class ContextNotSupportedError(Exception):
+    """This exception should be raised when the user attempts to use an incompatible object as a context manager"""
+    pass
 
 class Vector2:
     def __init__(self, x=0.0, y=0.0):
@@ -85,6 +102,7 @@ class Vector2:
 
         # do a final conversion to guarantee we're dealing with floats regardless of what 'x' and 'y' were initially
         self.x = float(self.x); self.y = float(self.y)
+        self._index = 0 # STRICTLY FOR ITERATION!
     
     def __repr__(self): return f"Vector2({self.x}, {self.y})"
     def __str__(self): return f"2D Vector [{self.x}, {self.y}]"
@@ -114,6 +132,40 @@ class Vector2:
         if type(self) == type(other): return Vector2(self.x / other.x, self.y / other.y)
         elif isinstance(other, int) or isinstance(other, float): return Vector2(self.x / other, self.y / other)
         raise TypeError(f"Cannot divide '{self}' by '{other}'")
+    
+    def __rtruediv__(self, scalar):
+        """Perform a reserved division of a 2D Vector by a scalar"""
+        return self.__truediv__(scalar)
+    
+    def __floordiv__(self, other):
+        """Floor-divide a 2D Vector by a scalar or another 2D Vector"""
+        if type(self) == type(other): return Vector2(self.x // other.x, self.y // other.y)
+        elif isinstance(other, int) or isinstance(other, float): return Vector2(self.x // other, self.y // other)
+        raise TypeError(f"Cannot floor-divide '{self}' by '{other}'")
+    
+    def __rfloordiv__(self, scalar):
+        """Perform a reserved floor division of a 2D Vector by a scalar"""
+        return self.__floordiv__(scalar)
+    
+    def __mod__(self, other):
+        """Perform a modulo (remainder) operation on a 2D Vector with another 2D Vector or scalar"""
+        if type(self) == type(other): return Vector2(self.x % other.x, self.y % other.y)
+        elif isinstance(other, int) or isinstance(other, float): return Vector2(self.x % other, self.y % other)
+        raise TypeError(f"Cannot perform modulo on '{self}' with '{other}'")
+    
+    def __rmod__(self, scalar):
+        """Perform a reserved modulo of a 2D Vector by a scalar"""
+        return self.__mod__(scalar)
+    
+    def __pow__(self, other):
+        """Raise all values of a 2D Vector to another 2D Vector or scalar"""
+        if type(self) == type(other): return Vector2(self.x ** other.x, self.y ** other.y)
+        elif isinstance(other, int) or isinstance(other, float): return Vector2(self.x ** other, self.y ** other)
+        raise TypeError(f"Cannot raise '{self}' to the power of '{other}'")
+    
+    def __rpow__(self, scalar):
+        """Perform a reserved exponentiation of a 2D Vector by a scalar"""
+        return self.__pow__(scalar)
     
     def magnitude(self):
         """Return the magnitude of this 2D Vector"""
@@ -150,6 +202,10 @@ class Vector2:
         """Return this 2D Vector with x and y values swapped"""
         return Vector2(self.y, self.x)
     
+    def __reversed__(self):
+        """Return this 2D Vector with x and y values swapped. Same as Vector2.swapped()"""
+        return Vector2(self.y, self.x)
+    
     def mirror_x(self):
         """Return a new 2D Vector which has been mirrored along the x axis"""
         return Vector2(-self.x, self.y)
@@ -182,6 +238,41 @@ class Vector2:
         if type(self) == type(other): return self.x == other.x and self.y == other.y
         return False
     
+    def __ne__(self, other):
+        """Non-equality check between this 2D Vector and other object, such as another 2D Vector
+        If it's a 2D Vector comparison, compare the non-equality of their x and y values
+        Otherwise, return True"""
+        if type(self) == type(other): return self.x != other.x and self.y != other.y
+        return False
+    
+    def __gt__(self, other):
+        """Return True if the x and y values of this 2D Vector are greater than the x and y values of another 2D Vector
+        If non-2D Vectors are being compared, raises a TypeError"""
+        if type(self) == type(other): return self.x > other.x and self.y > other.y
+        raise TypeError(f"Can only compare 2D Vectors, got '{other}'")
+    
+    def __lt__(self, other):
+        """Return True if the x and y values of this 2D Vector are lesser than the x and y values of another 2D Vector
+        If non-2D Vectors are being compared, raises a TypeError"""
+        if type(self) == type(other): return self.x < other.x and self.y < other.y
+        raise TypeError(f"Can only compare 2D Vectors, got '{other}'")
+    
+    def __ge__(self, other):
+        """Return True if the x and y values of this 2D Vector are greater than or equal to the x and y values of another 2D Vector
+        If non-2D Vectors are being compared, raises a TypeError"""
+        if type(self) == type(other): return self.x >= other.x and self.y >= other.y
+        raise TypeError(f"Can only compare 2D Vectors, got '{other}'")
+    
+    def __le__(self, other):
+        """Return True if the x and y values of this 2D Vector are lesser than or equal to the x and y values of another 2D Vector
+        If non-2D Vectors are being compared, raises a TypeError"""
+        if type(self) == type(other): return self.x <= other.x and self.y <= other.y
+        raise TypeError(f"Can only compare 2D Vectors, got '{other}'")
+    
+    def __abs__(self):
+        """Return the absolute value of this 2D Vector"""
+        return Vector2(abs(self.x), abs(self.y))
+    
     def __hash__(self):
         """Return a hashed version of this 2D Vector"""
         return hash((self.x, self.y))
@@ -189,6 +280,10 @@ class Vector2:
     def __neg__(self):
         """Return a negated/inversed version of this 2D Vector"""
         return Vector2(-self.x, -self.y)
+    
+    def __bool__(self):
+        """Return a boolean value of this 2D Vector"""
+        return False if self.x == self.y == 0.0 else True
     
     def round(self):
         """Round this 2D Vector"""
@@ -244,9 +339,53 @@ class Vector2:
             self.y /= other
             return self
         raise TypeError(f"Cannot divide '{self}' by '{other}'")
+
+    def __ifloordiv__(self, other):
+        """Floor-divide a 2D Vector by a scalar or a 2D Vector via //="""
+        if type(self) == type(other):
+            self.x //= other.x
+            self.y //= other.y
+            return self
+        elif isinstance(other, (int, float)):
+            self.x //= other
+            self.y //= other
+            return self
+        raise TypeError(f"Cannot floor-divide '{self}' by '{other}'")
+
+    def __imod__(self, other):
+        """Perform a modulo (remainder) operation on a 2D Vector via another 2D Vector or scalar via %="""
+        if type(self) == type(other):
+            self.x %= other.x
+            self.y %= other.y
+            return self
+        elif isinstance(other, (int, float)):
+            self.x %= other
+            self.y %= other
+            return self
+        raise TypeError(f"Cannot perform modulo on '{self}' with '{other}'")
+
+    def __ipow__(self, other):
+        """Raise a 2D Vector to the power of another 2D Vector or scalar via **="""
+        if type(self) == type(other):
+            self.x **= other.x
+            self.y **= other.y
+            return self
+        elif isinstance(other, (int, float)):
+            self.x **= other
+            self.y **= other
+            return self
+        raise TypeError(f"Cannot raise '{self}' to the power of '{other}'")
     
     def copy(self):
         """Returns a copy of this 2D Vector"""
+        return Vector2(self.x, self.y)
+    
+    def __copy__(self):
+        """Returns a copy of this 2D Vector. Same as Vector2.copy()"""
+        return Vector2(self.x, self.y)
+    
+    def __deepcopy__(self, memo):
+        """Returns a copy of this 2D Vector. Same as Vector2.copy()"""
         return Vector2(self.x, self.y)
     
     def AND(self):
@@ -258,7 +397,7 @@ class Vector2:
         return True if self.x != 0.0 or self.y != 0.0 else False
     
     def XOR(self):
-        """Returns True if either x or y are zero or not zero, but not both, otherwise False"""
+        """Returns True if the boolean values of x and y are unique (different), otherwise False"""
         # bool(0.0) evaluates to False
         return True if bool(self.x) != bool(self.y) else False
     
@@ -271,7 +410,7 @@ class Vector2:
         return not self.OR()
     
     def XNOR(self):
-        """Returns True if both x and y are either zero or not zero, but not either, otherwise False"""
+        """Returns True if the boolean values of x and y are the same, otherwise False"""
         return not self.XOR()
     
     def to_list(self):
@@ -317,3 +456,33 @@ class Vector2:
         * True if y value of this 2D Vector is between start_y and end_y, otherwise False"""
         # check if all of the input values are numbers
         if all([isinstance(i, (int, float)) for i in [start_x, start_y, end_x, end_y]]): return (start_x <= self.x <= end_x, start_y <= self.y <= end_y)
+    
+    def __iter__(self):
+        """Return the iterator of this 2D Vector"""
+        return self
+    
+    def __next__(self):
+        """Return the next value of this 2D Vector as an iterator"""
+        if self._index == 0: self._index += 1; return self.x
+        elif self._index == 1: self._index += 1; return self.y
+        else: raise StopIteration # end after passing both x and y values one after another
+    
+    def __getattr__(self, name):
+        """Raise an error if someone tries to access an attribute (such as 'x' or 'y') of this object that does not exist"""
+        raise AttributeError(f"The attribute '{name}' does not exist in '{self}'")
+    
+    def __setattr__(self, name, value):
+        """Raise a ValueError if one of this 2D Vector's attributes (such as 'x' or 'y') is set to a non-numeric value
+        Only allows overriding x, y, and _index"""
+        if name in ("x", "y", "_index"):
+            if isinstance(value, (int, float)): object.__setattr__(self, name, value)
+            else: raise ValueError(f"Cannot set '{name}' to a non-numeric value '{value}'")
+        else: raise ModificationNotAllowedError("Cannot add another attribute to this class.")
+    
+    def __delattr__(self, name):
+        """Do not allow anyone to remove any attributes from this object"""
+        warnings.warn("You are not allowed to remove attributes from this object.", AttributeDeletionBannedWarning)
+    
+    def __enter__(self):
+        """Ban this class from being used at the start of a 'with' block"""
+        raise ContextNotSupportedError("You are not permitted to use this class as a context manager.")
