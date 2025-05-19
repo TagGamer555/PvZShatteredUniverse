@@ -25,7 +25,7 @@ HEIGHT = 600
 SCREEN = pg.display.set_mode((WIDTH, HEIGHT), pg.SRCALPHA)
 CLOCK = pg.time.Clock()
 FPS = 60
-STARTING_SUN = 1500 # og: 150 for reference
+STARTING_SUN = 150 # og: 150 for reference
 
 
 
@@ -64,6 +64,16 @@ def draw_lawn(color1, color2, startX, startY, rows, cols, tile_size, surface):
             
             pg.draw.rect(surface, color, (x, y, tile_size, tile_size))
 
+def do_setup(starting_sun=STARTING_SUN, seed_packets=list(state.all_seed_packets)[:12], zombie_types=state.all_zombie_types, no_starting_cooldowns=False):
+    state.sun = starting_sun
+    state.seed_packets = seed_packets[:12] # limit to 12 to prevent future errors
+    state.zombie_types = zombie_types
+
+    if no_starting_cooldowns:
+        state.seed_cooldowns = [0 for _ in state.seed_packets]
+    else:
+        state.seed_cooldowns = [i.starting_cooldown for i in state.seed_packets]
+
 
 
 # --------- systems ---------
@@ -81,31 +91,14 @@ def draw_lawn(color1, color2, startX, startY, rows, cols, tile_size, surface):
 # for future me:
 # this section is perfect for starting new levels or loading them just give it some metadata from outside
 # probably will have to create a game class at some point, not now though
-state.sun = STARTING_SUN
-
 rows = 5
 cols = 9
 tile_size = 70
 lawn_x = (WIDTH - cols*tile_size) / 2
 lawn_y = (HEIGHT - rows*tile_size) / 2
 
-state.seed_packets = [e.Peashooter, e.Sunflower, e.WallNut, e.Pumpkin, e.CherryBomb, e.TerraFern, e.Starfruit]
-state.seed_packets = state.seed_packets[0:12] # only use the first 12 plants
-state.seed_cooldowns = [i.starting_cooldown for i in state.seed_packets]
-
-# sike ( temporary )
-state.seed_cooldowns = [0 for _ in state.seed_packets]
-
-state.zombie_types = [e.BasicZombie, e.ConeheadZombie, e.BucketheadZombie, e.BrickheadZombie]
-state.selection = None
-
-# for memories
-'''
-# grid setup
-layers = e.layers # here be different plant layers from the entities.py, such as "main" and "shell"
-# entities also have a "layer" property
-grid = [[{layers[i]: None for i in range(len(layers))} for _ in range(cols)] for _ in range(rows)]
-'''
+seed_packets = [e.Peashooter, e.Sunflower, e.WallNut]
+do_setup(starting_sun=1500, no_starting_cooldowns=True, seed_packets=seed_packets)
 
 # package metadata and send it to systems.py
 systems.level_metadata = {
@@ -130,7 +123,7 @@ ui.SunCounter(35, 7.5)
 
 # setup level (systems go brrr...)
 systems.SYSTEM_NaturalSun(900, 50, (1,1))
-systems.SYSTEM_ZombieWaves(120, 60, 1.2, wave_limit=-1) # og: 1200 (20.0s) for reference
+systems.SYSTEM_ZombieWaves(1200, 60, 1.2, wave_limit=-1) # og: 1200 (20.0s) for reference
 
 # the main course
 tiles = [*["land"]*3,"water"]

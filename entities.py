@@ -64,6 +64,8 @@ class Entity(Drawable):
 # hey copilot, do you wanna fall down and be collected by the player?
 #copilot: no, I don't want to fall down and be collected by the player
 class Sundrop(Entity):
+    require_sprites = ["sundrop_25", "sundrop_50", "sundrop_75"]
+
     def __init__(self, x, y, health, value, x_vel, y_vel, y_accel, y_limit):
         super().__init__(x, y, "Resources", health)
         self.max_health = health
@@ -127,7 +129,7 @@ class Plant(Entity):
     def __init__(self, x, y, health):
         super().__init__(x, y, "Plants", health)
         self.tile = None  # Set externally when planted
-        self.z = state.MIDDLEGROUND
+        self.z = state.MIDDLEGROUND - self.x//70
     
     # I'm lazy and most plants will have this hitbox anyway - ok but why are you lazy?
     def get_hitbox(self):
@@ -151,6 +153,8 @@ class Plant(Entity):
 
 # pea
 class Pea(Entity):
+    require_sprites = ["proj_pea"]
+
     def __init__(self, x, y, damage, angle):
         super().__init__(x, y, "Plants", 120)
         self.speed = 8 # Speed at which the pea moves
@@ -178,6 +182,8 @@ class Pea(Entity):
 
 # star
 class Star(Entity):
+    require_sprites = ["proj_star"]
+
     def __init__(self, x, y, damage, angle):
         super().__init__(x, y, "Plants", 120)
         self.speed = 10
@@ -211,6 +217,7 @@ class Peashooter(Plant):
     layer = "main"
     terrain = ["land"]
     platform_type = []
+    require_sprites = ["seedpacket_peashooter", "peashooter"]
     
     def __init__(self, x, y):
         super().__init__(x, y, 300)
@@ -251,6 +258,7 @@ class Sunflower(Plant):
     layer = "main"
     terrain = ["land"]
     platform_type = []
+    require_sprites = ["seedpacket_sunflower", "sunflower"]
     
     def __init__(self, x, y):
         super().__init__(x, y, 300)
@@ -283,6 +291,7 @@ class WallNut(Plant):
     layer = "main"
     terrain = ["land"]
     platform_type = []
+    require_sprites = ["seedpacket_wallnut", "wallnut", "wallnut_66", "wallnut_33"]
     
     def __init__(self, x, y):
         super().__init__(x, y, 3000) # ten times the health of a reg plant; nerfed to 5 times. yeah. buffed to 10 times again lol
@@ -310,10 +319,15 @@ class Pumpkin(Plant):
     layer = "shell"
     terrain = ["land"]
     platform_type = []
+    require_sprites = ["seedpacket_pumpkin", "pumpkin", "pumpkin_66", "pumpkin_33"]
     
     def __init__(self, x, y):
         super().__init__(x, y, 3000) # same as wall-nut
         self.max_health = self.health
+        self.z += 20 # increment to avoid overriding
+    
+    def get_hitbox(self):
+        return pg.Rect(self.x-37.5, self.y, 75, 35)
     
     def draw(self, surface):
         self.health_left_percent = self.health / self.max_health
@@ -336,6 +350,7 @@ class CherryBomb(Plant):
     layer = "main"
     terrain = ["land"]
     platform_type = []
+    require_sprites = ["seedpacket_cherrybomb", "cherrybomb", "cherrybomb_explosion"]
     
     def __init__(self, x, y):
         super().__init__(x, y, 40) # here health is more of an animation progress rather than anything significant
@@ -361,8 +376,8 @@ class CherryBomb(Plant):
     def die(self):
         if self.health <= 0:
             for entity in Entity.instances:
-                if self.x + 70 >= entity.x >= self.x - 70 and \
-                   self.y - 70 <= entity.y <= self.y + 70 and \
+                if self.x + 105 >= entity.x >= self.x - 105 and \
+                   self.y - 105 <= entity.y <= self.y + 105 and \
                    entity.team == "Zombies":
                     entity.hurt(1800)
             if self.tile:
@@ -382,6 +397,7 @@ class TerraFern(Plant):
     layer = "platform"
     terrain = ["water"]
     platform_type = ["land"]
+    require_sprites = ["seedpacket_terrafern", "terrafern", "terrafern_platform"]
     # FINISH TMRW
     # DOING IT!
     # done it (I think)
@@ -389,7 +405,7 @@ class TerraFern(Plant):
     
     def __init__(self, x, y):
         super().__init__(x, y, 300)
-        self.z = state.MIDDLEGROUND - 200
+        self.z -= 200
     
     def draw(self, surface):
         pg.draw.rect(surface, (26, 122, 62), (self.x-30, self.y-12.5, 60, 40))
@@ -405,6 +421,7 @@ class Starfruit(Plant):
     layer = "main"
     terrain = ["land"]
     platform_type = []
+    require_sprites = ["seedpacket_starfruit", "starfruit"]
     
     def __init__(self, x, y):
         super().__init__(x, y, 300)
@@ -457,7 +474,12 @@ class Zombie(Entity):
         self.interval_progress = type(self).attack_interval
         self.armor_durability = armor_durability
         self.armor_dr = armor_dr
-        self.z = state.MIDDLEGROUND + 200
+        self.z = state.MIDDLEGROUND + 200 - self.x//70
+    
+    def __init_subclass__(cls, **kwargs):
+        # add the zombie to all zombie types so that the asset manager can load them as well
+        super().__init_subclass__(**kwargs)
+        state.all_zombie_types.add(cls)
     
     def attack_plant(self, damage):
         zombie_hitbox = self.get_hitbox()
@@ -533,6 +555,7 @@ class BasicZombie(Zombie):
     spawn_cost = 1
     base_speed = 0.333333333 # 0.5 was a bit too fast for me; edit: 0.3333333 is too slow sadly; edit: 0.333333333 is bacc
     attack_interval = 60 # 20 was TOO fast. No, seriously. # 30 was too fast too. It's at 80 DPS rn.
+    require_sprites = ["seedpacket_basiczombie", "basiczombie", "basiczombie_50", "basiczombie_0"]
     
     def __init__(self, x, y):
         super().__init__(x, y, 160, 0, 0)
@@ -560,6 +583,7 @@ class ConeheadZombie(Zombie):
     # it'd be fair to copy the boring stats from the basic zombie
     base_speed = BasicZombie.base_speed
     attack_interval = BasicZombie.attack_interval
+    require_sprites = ["seedpacket_coneheadzombie", "coneheadzombie", "coneheadzombie_helmet50", "coneheadzombie_nohelmet", "coneheadzombie_noarm", "conehead_zombie_nohead"]
     
     def __init__(self, x, y):
         super().__init__(x, y, 160, 160, 1.0)
@@ -590,9 +614,10 @@ class BucketheadZombie(Zombie):
     # it'd be fair to copy the boring stats from the basic zombie
     base_speed = BasicZombie.base_speed
     attack_interval = BasicZombie.attack_interval
+    require_sprites = ["seedpacket_bucketheadzombie", "bucketheadzombie", "bucketheadzombie_helmet66", "bucketheadzombie_helmet33", "bucketheadzombie_nohelmet", "bucketheadzombie_noarm", "buckethead_zombie_nohead"]
     
     def __init__(self, x, y):
-        super().__init__(x, y, 160, 240, 1.0)
+        super().__init__(x, y, 160, 320, 1.0)
         self.speed = type(self).base_speed
     
     def get_hitbox(self):
@@ -619,9 +644,10 @@ class BrickheadZombie(Zombie):
     # it'd be fair to copy the boring stats from the basic zombie
     base_speed = BasicZombie.base_speed
     attack_interval = BasicZombie.attack_interval
+    require_sprites = ["seedpacket_brickheadzombie", "brickheadzombie", "brickheadzombie_helmet75", "brickheadzombie_helmet50", "brickheadzombie_helmet25", "brickheadzombie_nohelmet", "brickheadzombie_noarm", "brickheadzombie_nohead"]
     
     def __init__(self, x, y):
-        super().__init__(x, y, 160, 360, 1.0)
+        super().__init__(x, y, 160, 480, 1.0)
         self.speed = type(self).base_speed
     
     def get_hitbox(self):

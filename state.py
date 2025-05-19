@@ -27,8 +27,14 @@ zombie_types = []
 # all available plants (list of classes)
 all_seed_packets = set()
 
+# all available zombies (list of classes)
+all_zombie_types = set()
+
 # coordinates of the sun counter (tuple of ints)
 sun_ui_coords = (20, 20)
+
+# sprites required (list of strs)
+require_sprites = []
 
 # layer constants
 # these are used to determine the order in which entities are drawn
