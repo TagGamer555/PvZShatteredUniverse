@@ -146,3 +146,8 @@ Polished GitHub repo, added all the essentials, and made it look nice n' stuff.
 Good news: I just realized that pygame surfaces/displays support additive blending, so I'll look into that when implementing the zlayers
 
 Hopefully I'll refacture it by the end of this day, see you in a bit I guess...
+
+I am about to go to sleep, but before I do:
+- I switched from Thonny to VSCode
+- FINALLY added zlayers
+- New zombie type, the Brickhead zombie
