@@ -42,8 +42,10 @@ class ContextNotSupportedError(Exception):
 
 class Vector2:
     def __init__(self, x=0.0, y=0.0):
+        self._index = 0 # STRICTLY FOR ITERATION!
+        
         # complex numbers
-        if isinstance(x, complex): self.x = x.real; self.y = x.imag; return
+        if isinstance(x, complex): self.x = float(x.real); self.y = float(x.imag); return
 
         # lists and tuples
         # they work the same way, so we can pack them into one check
@@ -63,6 +65,8 @@ class Vector2:
                 else: raise TypeError(f"The second item of the {type(x)} '{x[:2]+['...']}' is not a valid number or None")
 
                 if len(x) > 2: warnings.warn(f"The {type(x)} '{x[:2]+['...']}' contains more than 2 elements, - the rest will be ignored", ExtraItemsWarning)
+                
+                self.x, self.y = float(self.x), float(self.y)
                 return
             else: raise TypeError(f"Input {type(x)} must have at least two values, got '{x}'")
         
@@ -81,6 +85,8 @@ class Vector2:
 
                 keys = set(x.keys()); required = {"x", "y"}; has_extra_keys = bool(keys - required)
                 if has_extra_keys: warnings.warn(f"The dict '{x}' contains more keys other than 'x' and 'y', - the rest will be ignored", ExtraItemsWarning)
+                
+                self.x, self.y = float(self.x), float(self.y)
                 return
             raise TypeError(f"Incorrect dictionary format: '{x}'\nThe dictionary must have a key-value pair for both key 'x' and key 'y'")
         
@@ -102,7 +108,6 @@ class Vector2:
 
         # do a final conversion to guarantee we're dealing with floats regardless of what 'x' and 'y' were initially
         self.x = float(self.x); self.y = float(self.y)
-        self._index = 0 # STRICTLY FOR ITERATION!
     
     def __repr__(self): return f"Vector2({self.x}, {self.y})"
     def __str__(self): return f"2D Vector [{self.x}, {self.y}]"
